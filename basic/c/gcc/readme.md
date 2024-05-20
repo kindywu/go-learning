@@ -1,0 +1,1 @@
+gcc -shared -fPIC -o libexample.so example.c
