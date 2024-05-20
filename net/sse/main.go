@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 )
@@ -80,6 +81,8 @@ func send_to_user(user_id string, data string) {
 	if value, ok := m.Load(user_id); ok {
 		data_ready := value.(chan string)
 		data_ready <- data
+	} else {
+		fmt.Fprintf(os.Stderr, "can not found user %s.", user_id)
 	}
 }
 
