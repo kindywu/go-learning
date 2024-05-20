@@ -84,7 +84,7 @@ func server() {
 
 	// Example command: go run server.go --port 9000 --multicore=true
 	flag.IntVar(&port, "port", 9000, "--port 9000")
-	flag.BoolVar(&multicore, "multicore", false, "--multicore=true")
+	flag.BoolVar(&multicore, "multicore", true, "--multicore=true")
 	flag.Parse()
 	ss := &simpleServer{
 		network:   "tcp",
@@ -115,7 +115,7 @@ func client() {
 	// Example command: go run client.go --network tcp --address ":9000" --concurrency 100 --packet_size 1024 --packet_batch 20 --packet_count 1000
 	flag.StringVar(&network, "network", "tcp", "--network tcp")
 	flag.StringVar(&addr, "address", "127.0.0.1:9000", "--address 127.0.0.1:9000")
-	flag.IntVar(&concurrency, "concurrency", 10, "--concurrency 500")
+	flag.IntVar(&concurrency, "concurrency", 1024, "--concurrency 500")
 	flag.IntVar(&packetSize, "packet_size", 1024, "--packe_size 256")
 	flag.IntVar(&packetBatch, "packet_batch", 100, "--packe_batch 100")
 	flag.IntVar(&packetCount, "packet_count", 10000, "--packe_count 10000")
