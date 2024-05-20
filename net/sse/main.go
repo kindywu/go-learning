@@ -66,7 +66,9 @@ func main() {
 		for range ticker.C {
 			currentTime := time.Now().Format(time.RFC3339)
 			m.Range(func(key, _ interface{}) bool {
-				send_to_user(key.(string), currentTime)
+				if err := send_to_user(key.(string), currentTime); err != nil {
+					fmt.Fprintln(os.Stderr, err)
+				}
 				return true // 继续迭代直到结束
 			})
 
@@ -77,12 +79,13 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
-func send_to_user(user_id string, data string) {
+func send_to_user(user_id string, data string) error {
 	if value, ok := m.Load(user_id); ok {
 		data_ready := value.(chan string)
 		data_ready <- data
+		return nil
 	} else {
-		fmt.Fprintf(os.Stderr, "can not found user %s.", user_id)
+		return fmt.Errorf("can't found user is %s", user_id)
 	}
 }
 
