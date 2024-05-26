@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"main/mi_nginx/common"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -22,7 +23,7 @@ func startUpstream(config *common.Config) {
 	app := fiber.New()
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World!")
+		return c.SendString("Hello, World!" + time.Now().Format("2006-01-02 15:04:05"))
 	})
 
 	log.Printf("Start upstream service")
