@@ -17,6 +17,7 @@ require (
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/gofiber/contrib/otelfiber/v2 v2.0.0
 	github.com/gofiber/fiber/v2 v2.52.2
+	github.com/golang-module/carbon/v2 v2.3.12
 	github.com/google/uuid v1.6.0
 	github.com/gorilla/handlers v1.5.2
 	github.com/gorilla/mux v1.8.1
@@ -27,6 +28,7 @@ require (
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/lib/pq v1.10.9
 	github.com/marusama/cyclicbarrier v1.1.0
+	github.com/matoous/go-nanoid/v2 v2.1.0
 	github.com/mdlayher/schedgroup v1.0.0
 	github.com/miekg/dns v1.1.56
 	github.com/mosajjal/dnsclient v0.2.0
@@ -35,6 +37,7 @@ require (
 	github.com/pion/dtls/v2 v2.2.7
 	github.com/pion/webrtc/v3 v3.2.29
 	github.com/redis/go-redis/v9 v9.0.2
+	github.com/stretchr/testify v1.9.0
 	github.com/uber-go/tally/v4 v4.1.12
 	github.com/vardius/gollback v1.1.1
 	github.com/yuin/gopher-lua v1.1.1
@@ -161,7 +164,6 @@ require (
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
-	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/syndtr/goleveldb v1.0.0 // indirect
 	github.com/twmb/murmur3 v1.1.5 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect

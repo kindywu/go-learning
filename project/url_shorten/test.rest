@@ -1,0 +1,13 @@
+###
+GET http://localhost:3000/
+
+### 
+GET http://localhost:3000/X_2C4H
+
+###
+POST http://127.0.0.1:3000/shorten HTTP/1.1
+content-type: application/json
+
+{
+    "uri":"www.roblox.com"
+}
