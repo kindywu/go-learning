@@ -14,3 +14,7 @@ docker stats 29cac6d4108f
 
 # 开发时自动热启动
 go install github.com/cosmtrek/air@latest
+
+# cobra
+- go get -u github.com/spf13/cobra/cobra
+- go install github.com/spf13/cobra-cli@latest
