@@ -3,7 +3,7 @@ package main
 import (
 	"io"
 	"log"
-	"main/mi_nginx/common"
+	"main/project/mi_nginx/common"
 	"net"
 	"sync"
 	"time"
