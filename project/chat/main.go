@@ -23,7 +23,9 @@ func main() {
 	log.Println("服务启动成功", listen_addr)
 	defer listener.Close()
 
-	var p Proxy
+	p := NewProxy()
+	p.Start()
+	defer p.Close()
 	for {
 		client, err := listener.Accept()
 		if err != nil {
@@ -56,32 +58,71 @@ func handle_client(conn net.Conn, p *Proxy) {
 	defer p.Unregister(name, conn)
 
 	for scanner.Scan() {
-		msg := scanner.Text()
-		p.Broadcast(name, conn.RemoteAddr(), msg)
+		content := scanner.Text()
+		p.Broadcast(NewMessage(name, conn.RemoteAddr(), content))
 	}
 }
 
+type Message struct {
+	Sender     string
+	SenderAddr net.Addr
+	Content    string
+}
+
+func NewMessage(sender string,
+	senderAddr net.Addr,
+	content string) Message {
+	return Message{
+		Sender:     sender,
+		SenderAddr: senderAddr,
+		Content:    content,
+	}
+}
+
+const SYSTEM = "system"
+
 type Proxy struct {
-	clients sync.Map
+	clients   sync.Map
+	broadcast chan Message
+}
+
+func NewProxy() Proxy {
+	return Proxy{
+		clients:   sync.Map{},
+		broadcast: make(chan Message, 1024),
+	}
+}
+
+func (p *Proxy) Start() {
+	go func() {
+		for message := range p.broadcast {
+			p.clients.Range(func(key, value interface{}) bool {
+				addr := key.(net.Addr)
+				if addr != message.SenderAddr {
+					conn := value.(net.Conn)
+					conn.Write([]byte(fmt.Sprintf("%s: %s\n", message.Sender, message.Content)))
+				}
+				return true
+			})
+		}
+	}()
+}
+
+func (p *Proxy) Close() {
+	close(p.broadcast)
+	p = nil
 }
 
 func (p *Proxy) Register(name string, conn net.Conn) {
 	p.clients.Store(conn.RemoteAddr(), conn)
-	p.Broadcast("sys", conn.RemoteAddr(), fmt.Sprintf("[%s joined]", name))
+	p.Broadcast(NewMessage(SYSTEM, conn.RemoteAddr(), fmt.Sprintf("[%s joined]", name)))
 }
 
 func (p *Proxy) Unregister(name string, conn net.Conn) {
 	p.clients.Delete(conn.RemoteAddr())
-	p.Broadcast("sys", conn.RemoteAddr(), fmt.Sprintf("[%s left]", name))
+	p.Broadcast(NewMessage(SYSTEM, conn.RemoteAddr(), fmt.Sprintf("[%s left]", name)))
 }
 
-func (p *Proxy) Broadcast(sender string, sender_addr net.Addr, message string) {
-	p.clients.Range(func(key, value interface{}) bool {
-		addr := key.(net.Addr)
-		if addr != sender_addr {
-			conn := value.(net.Conn)
-			conn.Write([]byte(fmt.Sprintf("%s: %s\n", sender, message)))
-		}
-		return true
-	})
+func (p *Proxy) Broadcast(message Message) {
+	p.broadcast <- message
 }
