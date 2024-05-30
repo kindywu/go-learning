@@ -2,7 +2,7 @@ package main
 
 import (
 	"log"
-	"main/mi_nginx/common"
+	"main/project/mi_nginx/common"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
