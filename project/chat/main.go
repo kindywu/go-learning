@@ -49,16 +49,15 @@ func handle_client(conn net.Conn, p *Proxy) {
 			break
 		}
 	}
-	log.Println("name:", name, "addr:", conn.RemoteAddr())
+	log.Printf("%s joined, addr=[%s]", name, conn.RemoteAddr())
 
 	p.Register(name, conn)
+	defer log.Printf("%s left, addr=[%s]", name, conn.RemoteAddr())
 	defer p.Unregister(name, conn)
 
-	for {
-		for scanner.Scan() {
-			msg := scanner.Text()
-			p.Broadcast(name, conn.RemoteAddr(), msg)
-		}
+	for scanner.Scan() {
+		msg := scanner.Text()
+		p.Broadcast(name, conn.RemoteAddr(), msg)
 	}
 }
 
