@@ -37,7 +37,9 @@ require (
 	github.com/pelletier/go-toml v1.2.0
 	github.com/pion/dtls/v2 v2.2.7
 	github.com/pion/webrtc/v3 v3.2.29
+	github.com/quic-go/quic-go v0.40.0
 	github.com/redis/go-redis/v9 v9.0.2
+	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.9.0
 	github.com/uber-go/tally/v4 v4.1.12
 	github.com/vardius/gollback v1.1.1
@@ -58,6 +60,7 @@ require (
 	google.golang.org/grpc v1.62.1
 	google.golang.org/protobuf v1.33.0
 	gopkg.in/yaml.v2 v2.4.0
+	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/postgres v1.5.7
 	gorm.io/gorm v1.25.7
 	k8s.io/apimachinery v0.29.2
@@ -160,12 +163,11 @@ require (
 	github.com/prometheus/client_model v0.2.0 // indirect
 	github.com/prometheus/common v0.26.0 // indirect
 	github.com/prometheus/procfs v0.6.0 // indirect
+	github.com/quic-go/qpack v0.4.0 // indirect
 	github.com/quic-go/qtls-go1-20 v0.4.1 // indirect
-	github.com/quic-go/quic-go v0.40.0 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
-	github.com/spf13/cobra v1.8.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/syndtr/goleveldb v1.0.0 // indirect
 	github.com/twmb/murmur3 v1.1.5 // indirect
@@ -194,7 +196,6 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240314234333-6e1732d8331c // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/natefinch/lumberjack.v2 v2.2.1 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gotest.tools/v3 v3.5.1 // indirect
 	k8s.io/api v0.29.2 // indirect
 	k8s.io/klog/v2 v2.110.1 // indirect
