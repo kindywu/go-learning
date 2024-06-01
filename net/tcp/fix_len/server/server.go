@@ -50,7 +50,7 @@ func handleClient(conn net.Conn) {
 		// 处理接收到的消息
 		// fmt.Println("服务器接收到消息:", string(buf[:length]))
 		if string(buf[:length]) != "你好" {
-			fmt.Println("len=%d,msg=%s", length, string(buf[:length]))
+			fmt.Printf("len=%d,msg=%s\n", length, string(buf[:length]))
 			break
 		}
 
