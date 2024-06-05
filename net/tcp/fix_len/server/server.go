@@ -2,17 +2,23 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net"
+	"runtime"
 	"sync"
+
+	_ "go.uber.org/automaxprocs"
 )
+
+const MAX_SIZE = 4 * 1024
 
 var bufferPool = sync.Pool{
 	New: func() interface{} {
 		fmt.Println("make bytes buffer")
-		buf := make([]byte, 4096) // 假设我们预计每次发送的消息的最大长度为4096字节
+		buf := make([]byte, MAX_SIZE) // 假设我们预计每次发送的消息的最大长度为4096字节
 		return &buf
 	},
 }
@@ -22,44 +28,54 @@ func handleClient(conn net.Conn) {
 	reader := bufio.NewReader(conn)
 
 	for {
-		// 从Pool中获取一个缓冲区
-		pointer := bufferPool.Get().(*[]byte)
-		buf := *pointer
-
-		// 读取消息长度
-		if _, err := io.ReadFull(reader, buf[:4]); err != nil {
-			log.Println("读取消息长度失败:", err)
-			return
+		_, err := read(reader, process)
+		if err != nil {
+			fmt.Println("读取数据失败", err)
 		}
 
-		// 转换长度字段为整数
-		length := int(int32(buf[0])<<24 | int32(buf[1])<<16 | int32(buf[2])<<8 | int32(buf[3]))
-
-		// 确保缓冲区足够大
-		if length > cap(buf) {
-			log.Println("消息长度超出缓冲区容量")
-			return
-		}
-
-		// 读取消息内容
-		if _, err := io.ReadFull(reader, buf[:length]); err != nil {
-			log.Println("读取消息内容失败:", err)
-			return
-		}
-
-		// 处理接收到的消息
-		// fmt.Println("服务器接收到消息:", string(buf[:length]))
-		if string(buf[:length]) != "你好" {
-			fmt.Printf("len=%d,msg=%s\n", length, string(buf[:length]))
-			break
-		}
-
-		// 将缓冲区放回Pool
-		bufferPool.Put(&buf)
+		// println(result.(string))
 	}
 }
 
+func process(buf []byte) (interface{}, error) {
+	return string(buf), nil
+}
+
+func read(reader *bufio.Reader, process func(buf []byte) (interface{}, error)) (interface{}, error) {
+	pointer := bufferPool.Get().(*[]byte)
+	defer bufferPool.Put(pointer)
+
+	buf := *pointer
+
+	// 读取消息长度
+	if _, err := io.ReadFull(reader, buf[:4]); err != nil {
+		return nil, err
+	}
+
+	// 转换长度字段为整数
+	length := int(int32(buf[0])<<24 | int32(buf[1])<<16 | int32(buf[2])<<8 | int32(buf[3]))
+
+	// 确保缓冲区足够大
+	if length > MAX_SIZE-4 {
+		return nil, errors.New("消息长度超出缓冲区容量")
+	}
+
+	// 读取消息内容
+	if _, err := io.ReadFull(reader, buf[:length]); err != nil {
+		return nil, err
+	}
+
+	result, err := process(buf[:length])
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
 func main() {
+	runtime.GOMAXPROCS(16)
 	// 监听本地8080端口
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
