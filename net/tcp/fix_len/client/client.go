@@ -4,26 +4,27 @@ import (
 	"fmt"
 	"math/rand"
 	"net"
-	"runtime"
 	"strings"
 	"sync"
 
 	_ "go.uber.org/automaxprocs"
 )
 
-const MAX_SIZE = 4 * 1024
-const CLIENT_SIZE = 100
+const K = 1024
+const MAX_SIZE = 4 * K
+const CLIENT_SIZE = 20
+const CLIENT_MESSAGE_SIZE = 2 * K
 
 var writeBufferPool = sync.Pool{
 	New: func() interface{} {
-		fmt.Println("make bytes buffer")
+		// fmt.Println("make bytes buffer")
 		buf := make([]byte, MAX_SIZE) // 假设我们预计每次发送的消息的最大长度为4096字节
 		return &buf
 	},
 }
 
 func main() {
-	runtime.GOMAXPROCS(16)
+	// println(runtime.GOMAXPROCS(16))
 	wg := sync.WaitGroup{}
 	wg.Add(CLIENT_SIZE)
 	for range CLIENT_SIZE {
@@ -43,9 +44,8 @@ func client() {
 		return
 	}
 	defer conn.Close()
-
+	userMessage := randomString(CLIENT_MESSAGE_SIZE)
 	for {
-		userMessage := randomString(100)
 		if err := write(conn, userMessage); err != nil {
 			fmt.Println("发送消息失败:", err)
 			break

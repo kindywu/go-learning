@@ -9,11 +9,13 @@ import (
 	"net"
 	"runtime"
 	"sync"
+	"time"
 
 	_ "go.uber.org/automaxprocs"
 )
 
-const MAX_SIZE = 4 * 1024
+const K = 1024
+const MAX_SIZE = 4 * K
 
 var bufferPool = sync.Pool{
 	New: func() interface{} {
@@ -30,7 +32,10 @@ func handleClient(conn net.Conn) {
 	for {
 		_, err := read(reader, process)
 		if err != nil {
-			fmt.Println("读取数据失败", err)
+			if err != io.EOF {
+				fmt.Printf("读取数据失败：%v 时间：%v\r\n", err, time.Now())
+			}
+			return
 		}
 
 		// println(result.(string))
@@ -38,7 +43,7 @@ func handleClient(conn net.Conn) {
 }
 
 func process(buf []byte) (interface{}, error) {
-	return string(buf), nil
+	return len(buf), nil
 }
 
 func read(reader *bufio.Reader, process func(buf []byte) (interface{}, error)) (interface{}, error) {
@@ -75,7 +80,7 @@ func read(reader *bufio.Reader, process func(buf []byte) (interface{}, error)) (
 }
 
 func main() {
-	runtime.GOMAXPROCS(16)
+	println(runtime.GOMAXPROCS(16))
 	// 监听本地8080端口
 	listener, err := net.Listen("tcp", ":8080")
 	if err != nil {
