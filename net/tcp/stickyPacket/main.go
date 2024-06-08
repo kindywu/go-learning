@@ -7,6 +7,8 @@ import (
 	"net"
 	"sync"
 	"time"
+
+	"github.com/fatih/color"
 )
 
 func process(conn net.Conn) {
@@ -23,7 +25,7 @@ func process(conn net.Conn) {
 			break
 		}
 		recvStr := string(buf[:n])
-		println("收到client发来的数据：", recvStr)
+		fmt.Println("收到client发来的数据：", recvStr)
 	}
 }
 
@@ -76,6 +78,7 @@ func main() {
 
 	go func() {
 		time.Sleep(3 * time.Second)
+		red := color.New(color.FgRed)
 		//client
 		conn, err := net.Dial("tcp", "127.0.0.1:30000")
 		if err != nil {
@@ -83,10 +86,11 @@ func main() {
 			return
 		}
 		defer conn.Close()
-		for i := 0; i < 20; i++ {
+		for i := 0; i < 100; i++ {
 			msg := `Hello, Hello. How are you?`
-			fmt.Println(msg)
 			conn.Write([]byte(msg))
+			red.Println("发送数据到服务器：", msg)
+
 		}
 		println("\nclient exit")
 		wg.Done()

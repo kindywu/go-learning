@@ -9,6 +9,7 @@ require (
 	github.com/elastic/go-elasticsearch/v8 v8.12.1
 	github.com/elliotchance/orderedmap/v2 v2.2.0
 	github.com/facebookgo/errgroup v0.0.0-20160209021148-779c8d7ef069
+	github.com/fatih/color v1.10.0
 	github.com/go-kratos/kratos v1.0.1
 	github.com/go-pkgz/syncs v1.3.2
 	github.com/go-playground/validator/v10 v10.19.0

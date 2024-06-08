@@ -9,7 +9,7 @@ import (
 // go test -bench=BenchmarkClientSend -benchmem -cpu 1,2,4,8,16
 func BenchmarkClientSend(b *testing.B) {
 	// message_size := 512
-	message_size := 100
+	message_size := 2 * K
 	message := randomString(message_size)
 
 	b.RunParallel(func(pb *testing.PB) {

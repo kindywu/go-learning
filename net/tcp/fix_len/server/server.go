@@ -30,7 +30,11 @@ func handleClient(conn net.Conn) {
 	reader := bufio.NewReader(conn)
 
 	for {
-		_, err := read(reader, process)
+		// _, err := read(reader, process)
+		data, err := read(reader, process)
+		if str, ok := data.(string); ok {
+			_ = len(str)
+		}
 		if err != nil {
 			if err != io.EOF {
 				fmt.Printf("读取数据失败：%v 时间：%v\r\n", err, time.Now())
@@ -42,8 +46,12 @@ func handleClient(conn net.Conn) {
 	}
 }
 
+// func process(buf []byte) (interface{}, error) {
+// 	return len(buf), nil
+// }
+
 func process(buf []byte) (interface{}, error) {
-	return len(buf), nil
+	return string(buf), nil
 }
 
 func read(reader *bufio.Reader, process func(buf []byte) (interface{}, error)) (interface{}, error) {
