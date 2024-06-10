@@ -32,3 +32,5 @@ go install github.com/cosmtrek/air@latest
 
 - go get -u github.com/spf13/cobra/cobra
 - go install github.com/spf13/cobra-cli@latest
+
+![alt text](image.png)
