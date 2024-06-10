@@ -34,3 +34,5 @@ go install github.com/cosmtrek/air@latest
 - go install github.com/spf13/cobra-cli@latest
 
 ![alt text](image.png)
+
+- 要将微秒（μs）转换为纳秒（ns），只需将 μs 乘以 1000，因为 1 微秒等于 1000 纳秒。因此，50-100 μs 的范围等于 50,000-100,000 纳秒。
