@@ -3,6 +3,7 @@ module main
 go 1.22.1
 
 require (
+	github.com/DATA-DOG/go-sqlmock v1.5.2
 	github.com/IBM/sarama v1.43.0
 	github.com/docker/docker v25.0.4+incompatible
 	github.com/ebitengine/purego v0.6.1
