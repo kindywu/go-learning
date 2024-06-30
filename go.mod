@@ -46,6 +46,7 @@ require (
 	github.com/uber-go/tally/v4 v4.1.12
 	github.com/vardius/gollback v1.1.1
 	github.com/yuin/gopher-lua v1.1.1
+	github.com/zllangct/ecs v0.0.0-20231204020321-ac8917a3ed6e
 	go.etcd.io/etcd/client/v2 v2.305.13
 	go.etcd.io/etcd/client/v3 v3.5.13
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.49.0
