@@ -58,7 +58,7 @@ func MaximalRectangle2(matrix [][]byte) int {
 			if j == m || matrix[i][j] == 0 {
 				heights[j] = 0
 			} else {
-				heights[j] = heights[j] + 1
+				heights[j] += 1
 			}
 		}
 
