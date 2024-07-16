@@ -52,4 +52,8 @@ func TestLuaCache2(t *testing.T) {
 	deleted_node = cache.put(6, 6)
 	assert.NotNil(t, deleted_node)
 	assert.Equal(t, 1, deleted_node.value)
+
+	assert.Equal(t, false, cache.remove(1))
+	assert.Equal(t, true, cache.remove(6))
+
 }
