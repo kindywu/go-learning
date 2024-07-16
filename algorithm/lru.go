@@ -31,28 +31,11 @@ func (c *LuaCache[K, V]) put(k K, v V) *Node[K, V] {
 	}
 
 	node := &Node[K, V]{key: k, value: v}
-
-	if len(c.map_list) == 0 {
-		c.head = node
-		c.tail = node
-	} else {
-		node.next = c.head
-		c.head.prev = node
-		c.head = node
-	}
-
 	c.map_list[k] = node
+	c.addNodeToHead(node)
 
 	if len(c.map_list) > c.capacity {
-		evicted := c.tail
-		if c.tail.prev != nil {
-			c.tail = c.tail.prev
-			c.tail.next = nil
-		} else {
-			c.head = nil
-			c.tail = nil
-		}
-		delete(c.map_list, evicted.key)
+		evicted := c.removeTailNode()
 		return evicted
 	}
 
@@ -70,18 +53,7 @@ func (c *LuaCache[K, V]) get(k K) (V, bool) {
 
 func (c *LuaCache[K, V]) remove(k K) bool {
 	if node, exists := c.map_list[k]; exists {
-		if node.prev != nil {
-			node.prev.next = node.next
-		} else {
-			c.head = node.next
-		}
-
-		if node.next != nil {
-			node.next.prev = node.prev
-		} else {
-			c.tail = node.prev
-		}
-
+		c.removeNode(node)
 		delete(c.map_list, k)
 		return true
 	}
@@ -96,19 +68,53 @@ func (c *LuaCache[K, V]) moveToHead(node *Node[K, V]) {
 	if c.head == node {
 		return
 	}
+	c.removeNode(node)
+	c.addNodeToHead(node)
+}
 
+func (c *LuaCache[K, V]) addNodeToHead(node *Node[K, V]) {
+	node.next = c.head
+	node.prev = nil
+
+	if c.head != nil {
+		c.head.prev = node
+	}
+
+	c.head = node
+
+	if c.tail == nil {
+		c.tail = node
+	}
+}
+
+func (c *LuaCache[K, V]) removeNode(node *Node[K, V]) {
 	if node.prev != nil {
 		node.prev.next = node.next
-	}
-	if node.next != nil {
-		node.next.prev = node.prev
-	}
-	if node == c.tail {
-		c.tail = node.prev
+	} else {
+		c.head = node.next
 	}
 
-	node.prev = nil
-	node.next = c.head
-	c.head.prev = node
-	c.head = node
+	if node.next != nil {
+		node.next.prev = node.prev
+	} else {
+		c.tail = node.prev
+	}
+}
+
+func (c *LuaCache[K, V]) removeTailNode() *Node[K, V] {
+	if c.tail == nil {
+		return nil
+	}
+
+	evicted := c.tail
+	if c.tail.prev != nil {
+		c.tail = c.tail.prev
+		c.tail.next = nil
+	} else {
+		c.head = nil
+		c.tail = nil
+	}
+
+	delete(c.map_list, evicted.key)
+	return evicted
 }
