@@ -13,6 +13,7 @@ import (
 // go test -bench=BenchmarkIndexHandler1 -benchmem -benchtime=10s -v
 // go test -bench=BenchmarkIndexHandler2 -benchmem -benchtime=10s -v
 // go test -bench=BenchmarkIndexHandler3 -benchmem -benchtime=10s -v
+// go test -bench=BenchmarkIndexHandler4 -benchmem -benchtime=10s -v
 
 // go test -bench . -benchmem -benchtime=10s -parallel=4 -v
 
@@ -34,46 +35,38 @@ func TestPool(t *testing.T) {
 }
 
 func BenchmarkIndexHandler1(b *testing.B) {
-	// 创建请求
-	req, _ := http.NewRequest("GET", "/", nil)
-
-	b.RunParallel(func(p *testing.PB) {
-		w := httptest.NewRecorder()
-		for p.Next() {
-			w.Body.Reset()
-			indexHandler1(w, req)
-		}
-	})
-
+	req, _ := http.NewRequest("GET", "/1", nil)
+	w := httptest.NewRecorder()
+	for n := 0; n < b.N; n++ {
+		indexHandler1(w, req)
+	}
 	printMemStats(b)
 }
 
 func BenchmarkIndexHandler2(b *testing.B) {
-	// 创建请求
-	req, _ := http.NewRequest("GET", "/", nil)
-
-	b.RunParallel(func(p *testing.PB) {
-		w := httptest.NewRecorder()
-		for p.Next() {
-			w.Body.Reset()
-			indexHandler2(w, req)
-		}
-	})
-
+	req, _ := http.NewRequest("GET", "/2", nil)
+	w := httptest.NewRecorder()
+	for n := 0; n < b.N; n++ {
+		indexHandler2(w, req)
+	}
 	printMemStats(b)
 }
 
 func BenchmarkIndexHandler3(b *testing.B) {
-	// 创建请求
-	req, _ := http.NewRequest("GET", "/", nil)
+	req, _ := http.NewRequest("GET", "/3", nil)
+	w := httptest.NewRecorder()
+	for n := 0; n < b.N; n++ {
+		indexHandler3(w, req)
+	}
+	printMemStats(b)
+}
 
-	b.RunParallel(func(p *testing.PB) {
-		w := httptest.NewRecorder()
-		for p.Next() {
-			indexHandler3(w, req)
-		}
-	})
-
+func BenchmarkIndexHandler4(b *testing.B) {
+	req, _ := http.NewRequest("GET", "/4", nil)
+	w := httptest.NewRecorder()
+	for n := 0; n < b.N; n++ {
+		indexHandler4(w, req)
+	}
 	printMemStats(b)
 }
 
@@ -83,17 +76,16 @@ func printMemStats(b *testing.B) {
 	runtime.ReadMemStats(&m)
 
 	// 计算GC次数
-	gcCount := m.NumGC
-	gcPauseTotalNs := m.PauseTotalNs
+	numGC := m.NumGC
+	pauseTotalNs := m.PauseTotalNs
 	alloc := m.Alloc
 	totalAlloc := m.TotalAlloc
 
-	b.Logf("test %s N: %d, biz size:%.2fKB, GC count: %v, pause: %.2fms, alloc: %.2fMB, total heap: %.2fMB",
-		b.Name(),
+	b.Logf("test N: %d, biz_size:%.2fKB, GC: %v, total_pause: %.2fms, alloc: %.2fMB, total_alloc: %.2fMB",
 		b.N,
 		toKb(SIZE),
-		gcCount,
-		toMs(gcPauseTotalNs),
+		numGC,
+		toMs(pauseTotalNs),
 		toMb(alloc),
 		toMb(totalAlloc))
 }

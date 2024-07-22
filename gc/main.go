@@ -38,9 +38,19 @@ func indexHandler3(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "byte array len is %d", len)
 }
 
+func indexHandler4(w http.ResponseWriter, r *http.Request) {
+	// 模拟执行业务
+	pool := New(SIZE, 1*1000*1000)
+	var byteArray = pool.Get() // 通过pool从堆里创建的对象
+	defer pool.Put(byteArray)  // 用完对象，归还pool，重复使用，使用 defer 确保无论后续代码如何，都会归还对象
+	len := len(*byteArray)     // 业务计算
+	fmt.Fprintf(w, "byte array len is %d", len)
+}
+
 func main() {
 	http.HandleFunc("/1", indexHandler1)
 	http.HandleFunc("/2", indexHandler2)
 	http.HandleFunc("/3", indexHandler3)
+	http.HandleFunc("/4", indexHandler4)
 	http.ListenAndServe(":8080", nil)
 }
