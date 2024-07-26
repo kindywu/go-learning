@@ -150,6 +150,9 @@ func printMaxGoroutine(b *testing.B) {
 	b.Log("start printMaxGoroutine")
 	go func() {
 		for {
+			// debug.SetGCPercent(-1)
+			// runtime.GOMAXPROCS(runtime.NumCPU() * 1000)
+
 			numGoroutine := runtime.NumGoroutine()
 			if int(max_numGoroutines.Load()) < numGoroutine {
 				max_numGoroutines.Store(int32(numGoroutine))
