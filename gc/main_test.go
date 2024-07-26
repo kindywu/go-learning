@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"runtime"
 	"sync"
+	"sync/atomic"
 	"testing"
 
 	fiberV2 "github.com/gofiber/fiber/v2"
@@ -113,6 +114,9 @@ func BenchmarkFiberHandlerV2(b *testing.B) {
 	printMemStats(b)
 }
 
+var numGoroutines_started atomic.Bool
+var max_numGoroutines atomic.Int32
+
 func printMemStats(b *testing.B) {
 	// 获取基准测试后的GC统计信息
 	var m runtime.MemStats
@@ -131,6 +135,23 @@ func printMemStats(b *testing.B) {
 		toMs(pauseTotalNs),
 		toMb(alloc),
 		toMb(totalAlloc))
+
+	go func() {
+		if numGoroutines_started.CompareAndSwap(false, true) == false {
+			// b.Log("quit")
+			return
+		}
+
+		for {
+			numGoroutine := runtime.NumGoroutine()
+			if int(max_numGoroutines.Load()) < numGoroutine {
+				max_numGoroutines.Store(int32(numGoroutine))
+				b.Logf("max num goroutines: %d", max_numGoroutines.Load())
+			}
+			// time.Sleep(1 * time.Second)
+		}
+	}()
+
 }
 
 func toKb(b uint64) float64 {
