@@ -45,3 +45,11 @@ go install github.com/cosmtrek/air@latest
 - 带宽（Bandwidth）：
   带宽表示在单位时间内能够传输的数据量。在存储系统中，带宽表示存储系统能够传输的数据速率。更高的带宽意味着系统能够在单位时间内传输更多的数据，因此带宽越高越好。
   例如，在存储系统中，带宽通常表示在一秒内能够从存储设备读取或写入的数据量。
+
+# 配置 GOPROXY 环境变量
+export GOPROXY=https://goproxy.io,direct
+
+秒 (second) 1
+毫秒（Millisecond）1000
+微秒（Microsecond）1000 * 1000
+纳秒（Nanosecond） 1000 * 1000 * 1000
