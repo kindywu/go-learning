@@ -154,9 +154,9 @@ func printMaxGoroutine(b *testing.B) {
 			if int(max_numGoroutines.Load()) < numGoroutine {
 				max_numGoroutines.Store(int32(numGoroutine))
 				b.Logf("max num goroutines: %d", max_numGoroutines.Load())
-				time.Sleep(1 * time.Millisecond)
 			}
-
+			// b.Logf("num goroutines: %d", numGoroutine)
+			time.Sleep(1 * time.Millisecond)
 		}
 	}()
 }
