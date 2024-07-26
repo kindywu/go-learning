@@ -11,7 +11,9 @@ const SIZE = 1024 * 5
 func indexHandler1(w http.ResponseWriter, r *http.Request) {
 	// 当没有业务逻辑，空架子
 	// 当业务逻辑，只有栈内存分配，没有堆内存分配，跟GC无关
-	fmt.Fprintln(w, "hello")
+	// w.WriteHeader(http.StatusOK)
+	fmt.Fprintln(w, "Hello, World!")
+
 	// 有些框架的特性里有zero memory allocation，意思就是框架本身没有进行堆内存分配，高并发情况下，框架自身不会触发GC
 }
 

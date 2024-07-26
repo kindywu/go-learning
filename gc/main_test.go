@@ -7,13 +7,16 @@ import (
 	"sync"
 	"testing"
 
+	fiber "github.com/gofiber/fiber/v3"
 	"github.com/stretchr/testify/assert"
+	"github.com/valyala/fasthttp"
 )
 
 // go test -bench=BenchmarkIndexHandler1 -benchmem -benchtime=10s -v
 // go test -bench=BenchmarkIndexHandler2 -benchmem -benchtime=10s -v
 // go test -bench=BenchmarkIndexHandler3 -benchmem -benchtime=10s -v
 // go test -bench=BenchmarkIndexHandler4 -benchmem -benchtime=10s -v
+// go test -bench=BenchmarkFiberHandler -benchmem -benchtime=10s -v
 
 // go test -bench . -benchmem -benchtime=10s -parallel=4 -v
 
@@ -66,6 +69,25 @@ func BenchmarkIndexHandler4(b *testing.B) {
 	w := httptest.NewRecorder()
 	for n := 0; n < b.N; n++ {
 		indexHandler4(w, req)
+	}
+	printMemStats(b)
+}
+
+func BenchmarkFiberHandler(b *testing.B) {
+	app := fiber.New()
+
+	app.Get("/", func(c fiber.Ctx) error {
+		return c.SendString("Hello, World!")
+		// return c.SendStatus(fiber.StatusOK)
+	})
+
+	h := app.Handler()
+	fctx := &fasthttp.RequestCtx{}
+	fctx.Request.Header.SetMethod(fiber.MethodGet)
+	fctx.Request.SetRequestURI("/")
+
+	for n := 0; n < b.N; n++ {
+		h(fctx)
 	}
 	printMemStats(b)
 }
