@@ -7,7 +7,8 @@ import (
 	"sync"
 	"testing"
 
-	fiber "github.com/gofiber/fiber/v3"
+	fiberV2 "github.com/gofiber/fiber/v2"
+	fiberV3 "github.com/gofiber/fiber/v3"
 	"github.com/stretchr/testify/assert"
 	"github.com/valyala/fasthttp"
 )
@@ -16,7 +17,8 @@ import (
 // go test -bench=BenchmarkIndexHandler2 -benchmem -benchtime=10s -v
 // go test -bench=BenchmarkIndexHandler3 -benchmem -benchtime=10s -v
 // go test -bench=BenchmarkIndexHandler4 -benchmem -benchtime=10s -v
-// go test -bench=BenchmarkFiberHandler -benchmem -benchtime=10s -v
+// go test -bench=BenchmarkFiberHandlerV2 -benchmem -benchtime=10s -v
+// go test -bench=BenchmarkFiberHandlerV3 -benchmem -benchtime=10s -v
 
 // go test -bench . -benchmem -benchtime=10s -parallel=4 -v
 
@@ -73,17 +75,36 @@ func BenchmarkIndexHandler4(b *testing.B) {
 	printMemStats(b)
 }
 
-func BenchmarkFiberHandler(b *testing.B) {
-	app := fiber.New()
+func BenchmarkFiberHandlerV3(b *testing.B) {
+	app := fiberV3.New()
 
-	app.Get("/", func(c fiber.Ctx) error {
+	app.Get("/", func(c fiberV3.Ctx) error {
 		return c.SendString("Hello, World!")
 		// return c.SendStatus(fiber.StatusOK)
 	})
 
 	h := app.Handler()
 	fctx := &fasthttp.RequestCtx{}
-	fctx.Request.Header.SetMethod(fiber.MethodGet)
+	fctx.Request.Header.SetMethod(fiberV3.MethodGet)
+	fctx.Request.SetRequestURI("/")
+
+	for n := 0; n < b.N; n++ {
+		h(fctx)
+	}
+	printMemStats(b)
+}
+
+func BenchmarkFiberHandlerV2(b *testing.B) {
+	app := fiberV2.New()
+
+	app.Get("/", func(c *fiberV2.Ctx) error {
+		return c.SendString("Hello, World!")
+		// return c.SendStatus(fiber.StatusOK)
+	})
+
+	h := app.Handler()
+	fctx := &fasthttp.RequestCtx{}
+	fctx.Request.Header.SetMethod(fiberV2.MethodGet)
 	fctx.Request.SetRequestURI("/")
 
 	for n := 0; n < b.N; n++ {
