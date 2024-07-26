@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"sync"
@@ -8,11 +9,21 @@ import (
 
 const SIZE = 1024 * 5
 
+type Msg struct {
+	Message string `json:"message"`
+}
+
+// var msg = Msg{Message: "Hello, World!"}
+
 func indexHandler1(w http.ResponseWriter, r *http.Request) {
 	// 当没有业务逻辑，空架子
 	// 当业务逻辑，只有栈内存分配，没有堆内存分配，跟GC无关
 	// w.WriteHeader(http.StatusOK)
-	fmt.Fprintln(w, "Hello, World!")
+	// fmt.Fprintln(w, "Hello, World!")
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(Msg{Message: "Hello, World!"})
+	// json.NewEncoder(w).Encode(msg)
 
 	// 有些框架的特性里有zero memory allocation，意思就是框架本身没有进行堆内存分配，高并发情况下，框架自身不会触发GC
 }
@@ -42,7 +53,7 @@ func indexHandler3(w http.ResponseWriter, r *http.Request) {
 
 func indexHandler4(w http.ResponseWriter, r *http.Request) {
 	// 模拟执行业务
-	pool := New(SIZE, 1*1000*1000)
+	pool := NewPool(SIZE, 1*1000*1000)
 	var byteArray = pool.Get() // 通过pool从堆里创建的对象
 	defer pool.Put(byteArray)  // 用完对象，归还pool，重复使用，使用 defer 确保无论后续代码如何，都会归还对象
 	len := len(*byteArray)     // 业务计算

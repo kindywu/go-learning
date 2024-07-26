@@ -45,6 +45,7 @@ require (
 	github.com/spf13/cobra v1.8.0
 	github.com/stretchr/testify v1.9.0
 	github.com/uber-go/tally/v4 v4.1.12
+	github.com/valyala/fasthttp v1.55.0
 	github.com/vardius/gollback v1.1.1
 	github.com/yuin/gopher-lua v1.1.1
 	go.etcd.io/etcd/client/v2 v2.305.13
@@ -176,7 +177,6 @@ require (
 	github.com/syndtr/goleveldb v1.0.0 // indirect
 	github.com/twmb/murmur3 v1.1.5 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
-	github.com/valyala/fasthttp v1.55.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
 	go.etcd.io/etcd/api/v3 v3.5.13 // indirect
 	go.etcd.io/etcd/client/pkg/v3 v3.5.13 // indirect

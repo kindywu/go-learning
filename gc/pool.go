@@ -28,7 +28,7 @@ func (p *Pool) Put(buf *[]byte) {
 var once sync.Once
 var myPool *Pool
 
-func New(size int, chanLen int) *Pool {
+func NewPool(size int, chanLen int) *Pool {
 	once.Do(func() {
 		myPool = new(size, chanLen)
 		// 初始化singleton的逻辑

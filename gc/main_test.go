@@ -7,6 +7,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	fiberV2 "github.com/gofiber/fiber/v2"
 	fiberV3 "github.com/gofiber/fiber/v3"
@@ -76,25 +77,6 @@ func BenchmarkIndexHandler4(b *testing.B) {
 	printMemStats(b)
 }
 
-func BenchmarkFiberHandlerV3(b *testing.B) {
-	app := fiberV3.New()
-
-	app.Get("/", func(c fiberV3.Ctx) error {
-		return c.SendString("Hello, World!")
-		// return c.SendStatus(fiber.StatusOK)
-	})
-
-	h := app.Handler()
-	fctx := &fasthttp.RequestCtx{}
-	fctx.Request.Header.SetMethod(fiberV3.MethodGet)
-	fctx.Request.SetRequestURI("/")
-
-	for n := 0; n < b.N; n++ {
-		h(fctx)
-	}
-	printMemStats(b)
-}
-
 func BenchmarkFiberHandlerV2(b *testing.B) {
 	app := fiberV2.New()
 
@@ -114,8 +96,29 @@ func BenchmarkFiberHandlerV2(b *testing.B) {
 	printMemStats(b)
 }
 
-var numGoroutines_started atomic.Bool
-var max_numGoroutines atomic.Int32
+// var msg2 = Msg{Message: "Hello, World!"}
+
+func BenchmarkFiberHandlerV3(b *testing.B) {
+	app := fiberV3.New()
+
+	app.Get("/", func(c fiberV3.Ctx) error {
+		// return c.JSON(fiberV3.Map{"message": "Hello, World!"})
+		// return c.JSON(msg2)
+		return c.JSON(Msg{Message: "Hello, World!"})
+		// return c.SendString("Hello, World!")
+		// return c.SendStatus(fiber.StatusOK)
+	})
+
+	h := app.Handler()
+	fctx := &fasthttp.RequestCtx{}
+	fctx.Request.Header.SetMethod(fiberV3.MethodGet)
+	fctx.Request.SetRequestURI("/")
+
+	for n := 0; n < b.N; n++ {
+		h(fctx)
+	}
+	printMemStats(b)
+}
 
 func printMemStats(b *testing.B) {
 	// 获取基准测试后的GC统计信息
@@ -136,22 +139,26 @@ func printMemStats(b *testing.B) {
 		toMb(alloc),
 		toMb(totalAlloc))
 
-	go func() {
-		if numGoroutines_started.CompareAndSwap(false, true) == false {
-			// b.Log("quit")
-			return
-		}
+	once.Do(func() {
+		printMaxGoroutine(b)
+	})
+}
 
+var max_numGoroutines atomic.Int32
+
+func printMaxGoroutine(b *testing.B) {
+	b.Log("start printMaxGoroutine")
+	go func() {
 		for {
 			numGoroutine := runtime.NumGoroutine()
 			if int(max_numGoroutines.Load()) < numGoroutine {
 				max_numGoroutines.Store(int32(numGoroutine))
 				b.Logf("max num goroutines: %d", max_numGoroutines.Load())
+				time.Sleep(1 * time.Millisecond)
 			}
-			// time.Sleep(1 * time.Second)
+
 		}
 	}()
-
 }
 
 func toKb(b uint64) float64 {
